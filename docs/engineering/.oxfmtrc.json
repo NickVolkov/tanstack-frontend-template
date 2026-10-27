@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "canonical-app/src/api/generated/**",
+    "canonical-app/src/routeTree.gen.ts",
+    "canonical-app/node_modules/**",
+    "canonical-app/.output/**",
+    "canonical-app/.vinxi/**",
+    "canonical-app/storybook-static/**"
+  ],
+  "sortPackageJson": true
+}

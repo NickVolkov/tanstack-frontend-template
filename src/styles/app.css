@@ -1,0 +1,80 @@
+:root {
+  color: #18211d;
+  background: #f3f0e8;
+  font-family: "Source Sans 3 Variable", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    linear-gradient(90deg, rgb(24 33 29 / 6%) 1px, transparent 1px) 0 0 / 52px 52px,
+    #f3f0e8;
+}
+
+.welcome-shell {
+  min-height: 100vh;
+  border-top: 6px solid #d95d39;
+}
+
+.wordmark,
+.eyebrow,
+.card-index {
+  font-family: "Source Sans 3 Variable", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.card-index {
+  color: #b74b2c;
+}
+
+.display-title {
+  margin-top: 0.75rem;
+  font-family: "Newsreader Variable", serif;
+  font-size: clamp(3.2rem, 8vw, 7.4rem);
+  font-weight: 450;
+  letter-spacing: -0.055em;
+  line-height: 0.88;
+}
+
+.lede {
+  max-width: 54ch;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.foundation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #18211d;
+  border-left: 1px solid #18211d;
+}
+
+.foundation-card {
+  min-height: 220px;
+  padding: 1.5rem;
+  border-right: 1px solid #18211d;
+  border-bottom: 1px solid #18211d;
+  background: rgb(243 240 232 / 82%);
+}
+
+.foundation-card h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-family: "Newsreader Variable", serif;
+  font-weight: 520;
+}
+
+@media (max-width: 48rem) {
+  .foundation-grid {
+    grid-template-columns: 1fr;
+  }
+}

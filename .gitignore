@@ -1,0 +1,11 @@
+node_modules/
+.output/
+.vinxi/
+dist/
+coverage/
+storybook-static/
+*.log
+.DS_Store
+.env
+.env.local
+apm_modules/

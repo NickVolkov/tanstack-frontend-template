@@ -1,0 +1,24 @@
+{
+  "name": "frontend-engineering-guides",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:canonical": "pnpm --filter canonical-article-app install",
+    "generate": "pnpm --filter canonical-article-app generate",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "pnpm --filter canonical-article-app lint",
+    "typecheck": "pnpm --filter canonical-article-app typecheck",
+    "test": "pnpm --filter canonical-article-app test",
+    "build": "pnpm --filter canonical-article-app build",
+    "check:generated": "pnpm --filter canonical-article-app check:generated",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:generated"
+  },
+  "devDependencies": {
+    "oxfmt": "0.74.0"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

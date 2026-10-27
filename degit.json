@@ -1,0 +1,8 @@
+[
+  {
+    "action": "search_replace",
+    "files": ["package.json", "apm.yml"],
+    "pattern": "tanstack-frontend-template",
+    "replacement": "PROJECT_NAME"
+  }
+]

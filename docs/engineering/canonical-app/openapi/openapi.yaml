@@ -1,0 +1,139 @@
+openapi: 3.0.3
+info:
+  title: Canonical Article API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001
+paths:
+  /api/articles:
+    get:
+      operationId: listArticles
+      tags: [Articles]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 50, default: 10 }
+        - in: query
+          name: status
+          schema: { $ref: "#/components/schemas/ArticleStatus" }
+        - in: query
+          name: search
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated Article summaries
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArticleListResponseDto" }
+    post:
+      operationId: createArticle
+      tags: [Articles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateArticleDto" }
+      responses:
+        "201":
+          description: Complete created Article
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArticleDto" }
+  /api/articles/{articleId}:
+    parameters:
+      - in: path
+        name: articleId
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      operationId: getArticle
+      tags: [Articles]
+      responses:
+        "200":
+          description: Complete Article detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArticleDto" }
+        "404":
+          description: Article not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+    patch:
+      operationId: updateArticle
+      tags: [Articles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateArticleDto" }
+      responses:
+        "200":
+          description: Complete updated Article
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ArticleDto" }
+    delete:
+      operationId: deleteArticle
+      tags: [Articles]
+      responses:
+        "204": { description: Article deleted }
+components:
+  schemas:
+    ArticleStatus:
+      type: string
+      enum: [draft, published]
+    ArticleListItemDto:
+      type: object
+      required: [id, title, excerpt, status, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        excerpt: { type: string }
+        status: { $ref: "#/components/schemas/ArticleStatus" }
+        updatedAt: { type: string, format: date-time }
+    ArticleDto:
+      allOf:
+        - $ref: "#/components/schemas/ArticleListItemDto"
+        - type: object
+          required: [body, authorName, createdAt]
+          properties:
+            body: { type: string }
+            authorName: { type: string }
+            createdAt: { type: string, format: date-time }
+    ArticleListResponseDto:
+      type: object
+      required: [items, meta]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ArticleListItemDto" }
+        meta:
+          type: object
+          required: [page, limit, total, hasNext]
+          properties:
+            page: { type: integer }
+            limit: { type: integer }
+            total: { type: integer }
+            hasNext: { type: boolean }
+    CreateArticleDto:
+      type: object
+      required: [title, body, status]
+      properties:
+        title: { type: string, minLength: 3, maxLength: 120 }
+        body: { type: string, minLength: 20 }
+        status: { $ref: "#/components/schemas/ArticleStatus" }
+    UpdateArticleDto:
+      type: object
+      properties:
+        title: { type: string, minLength: 3, maxLength: 120 }
+        body: { type: string, minLength: 20 }
+        status: { $ref: "#/components/schemas/ArticleStatus" }
+    ApiError:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }

@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "src/api/generated/**",
+    "src/mocks/openapi.spec.json",
+    "src/routeTree.gen.ts",
+    "public/mockServiceWorker.js",
+    "node_modules/**",
+    ".output/**",
+    ".vinxi/**",
+    "storybook-static/**"
+  ],
+  "sortPackageJson": true
+}

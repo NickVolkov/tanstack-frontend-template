@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "docs/engineering/**",
+    "src/routeTree.gen.ts",
+    "node_modules/**",
+    ".output/**",
+    ".vinxi/**",
+    "storybook-static/**",
+    "apm_modules/**"
+  ],
+  "sortPackageJson": true
+}

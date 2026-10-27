@@ -1,0 +1,6 @@
+node_modules/
+canonical-app/node_modules/
+canonical-app/.output/
+canonical-app/.vinxi/
+canonical-app/coverage/
+canonical-app/storybook-static/

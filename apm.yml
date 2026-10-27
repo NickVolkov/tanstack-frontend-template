@@ -1,0 +1,14 @@
+name: tanstack-frontend-template
+version: 1.0.0
+description: APM project for tanstack-frontend-template
+author: Nick Volkov
+targets:
+  - agent-skills
+  - claude
+  - codex
+dependencies:
+  apm:
+    - mattpocock/skills
+  mcp: []
+includes: auto
+scripts: {}

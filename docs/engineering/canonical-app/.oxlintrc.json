@@ -1,0 +1,62 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "plugins": ["typescript", "react", "react-hooks", "import", "jsx-a11y", "vitest", "oxc"],
+  "jsPlugins": [{ "name": "fsd", "specifier": "eslint-plugin-fsd-lint" }],
+  "options": { "typeAware": true, "maxWarnings": 0 },
+  "ignorePatterns": [
+    "src/api/generated/**",
+    "src/mocks/openapi.spec.json",
+    "src/routeTree.gen.ts",
+    "public/mockServiceWorker.js",
+    "node_modules/**",
+    ".output/**",
+    ".vinxi/**",
+    "storybook-static/**"
+  ],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": "off",
+    "react-hooks/exhaustive-deps": "error",
+    "fsd/forbidden-imports": [
+      "error",
+      {
+        "rootPath": "/src/",
+        "alias": { "value": "@", "withSlash": true },
+        "ignoreImportPatterns": ["\\.css$"]
+      }
+    ],
+    "fsd/no-cross-slice-dependency": [
+      "error",
+      { "rootPath": "/src/", "alias": { "value": "@", "withSlash": true } }
+    ],
+    "fsd/no-global-store-imports": "error",
+    "fsd/no-public-api-sidestep": [
+      "error",
+      {
+        "rootPath": "/src/",
+        "alias": { "value": "@", "withSlash": true },
+        "publicApi": { "allowSegmentImports": false, "enforceShared": true }
+      }
+    ],
+    "fsd/no-relative-imports": [
+      "error",
+      { "rootPath": "/src/", "alias": { "value": "@", "withSlash": true }, "allowSameSlice": true }
+    ],
+    "fsd/no-ui-in-business-logic": [
+      "error",
+      { "rootPath": "/src/", "alias": { "value": "@", "withSlash": true } }
+    ],
+    "fsd/ordered-imports": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.{ts,tsx}"],
+      "rules": { "vitest/require-mock-type-parameters": "off" }
+    }
+  ]
+}

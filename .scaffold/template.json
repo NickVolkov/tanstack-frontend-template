@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "symlinks": {
+    "CLAUDE.md": "AGENTS.md"
+  },
+  "afterCreate": [
+    "apm install",
+    "pnpm install",
+    "pnpm canonical:install",
+    "pnpm routes:generate",
+    "pnpm canonical:generate"
+  ],
+  "afterUpdate": ["pnpm install", "pnpm canonical:install", "pnpm check"]
+}
