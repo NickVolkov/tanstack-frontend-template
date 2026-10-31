@@ -4,16 +4,47 @@ This document describes the standardized approach to implementing forms in this 
 
 ## Overview
 
-The forms approach uses TanStack Form with Zod validation. Start with TanStack
-Form directly, as the canonical Article editor does. Introduce the custom form
-hook, `withForm`, field contexts, and `FieldHOC` patterns below when multiple
-forms share field behavior; do not build an abstraction for a single field.
+The forms approach uses TanStack Form with Zod validation. Use raw TanStack Form
+for genuinely isolated forms. Introduce the application form hook, `withForm`,
+field contexts, and `FieldHOC` patterns below when multiple forms share field
+behavior; do not build an abstraction for a single field.
+
+The canonical app now includes the Odes form architecture under
+`canonical-app/src/shared/form`. The Article editor uses `formOptions`,
+`useAppForm`, `withForm`, registered fields, and mutation-driven submission.
+
+### One context pair is a hard invariant
+
+Call `createFormHookContexts()` exactly once for an application form system.
+Both `createFormHook` and every `FieldHOC` must import `fieldContext`,
+`formContext`, and their hooks from that same module:
+
+```ts
+// form-context.ts
+export const { fieldContext, formContext, useFieldContext, useFormContext } =
+  createFormHookContexts();
+
+// base-form.tsx
+export const { useAppForm, withForm } = createFormHook({
+  fieldComponents: { FormInput, FormTextarea },
+  formComponents: { Button },
+  fieldContext,
+  formContext,
+});
+```
+
+Creating one context pair in `base-form.tsx` and another in `field-hoc.tsx`
+produces components that compile but read a different provider at runtime. Keep
+the contexts in a dependency-free `form-context.ts` to avoid circular imports.
 
 ## Core Patterns
 
 ### 1. Custom Form Hook
 
 Forms are created using a custom `useForm` hook that extends TanStack Form:
+
+In this template that hook is named `useAppForm` so it cannot be confused with
+the raw TanStack hook:
 
 ```ts
 // Custom form hook
@@ -103,6 +134,16 @@ export const InputField = FieldHOC(InputDesktop, {
   formatValue: (value) => value || "",
 });
 ```
+
+`FieldHOC` is responsible for mechanical field plumbing only: `name`, `value`,
+`onChange`, `onBlur`, Enter submission, the first validation error, and
+`aria-invalid`. Domain validation stays in Zod/form validators. `traitEmptyAsNull`
+is an explicit boundary conversion for nullable API values; it must not become a
+global empty-string policy.
+
+Enter submission must be configurable per adapter. It is appropriate for a
+single-line input and wrong for a textarea, where Enter inserts a newline. The
+canonical `FormTextarea` sets `submitOnEnter: false`.
 
 ## Validation Patterns
 
@@ -272,6 +313,9 @@ The form system provides several built-in field types:
 6. **Provide meaningful error messages** in validation schemas
 7. **Format values** appropriately in field HOCs
 8. **Create custom fields** when needed using `FieldHOC`
+9. **Reuse one form context pair** across `createFormHook` and all registered fields
+10. **Keep domain rules out of `FieldHOC`**; it adapts UI events and accessibility, not business validation
+11. **Disable Enter-submit for multiline controls** so generic field plumbing does not override native editing behavior
 
 Submission failures belong to the mutation state. Validation failures belong to
 TanStack Form field/form meta. Do not mirror either into an extra React state:

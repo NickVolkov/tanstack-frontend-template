@@ -6,6 +6,7 @@ Test behavior at the narrowest boundary that proves it.
 - Integration-test API/query behavior with MSW in Node; never call a real backend.
 - Component-test discriminated UI states rather than mocking internal query flags.
 - Test modal factories with a minimal adapter: params survive `close`, reset on `onCloseEnd`, and parameterless `open` needs no placeholder argument.
+- Render at least one registered field through `useAppForm`; this catches mismatched `createFormHookContexts()` instances that type checking cannot detect.
 - Storybook stories cover visual states and accessibility, not business logic already proven in unit tests.
 - Regenerate API and mock artifacts in CI and fail on drift.
 
