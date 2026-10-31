@@ -29,29 +29,78 @@ const articleFormOptions = formOptions({
   validators: { onSubmit: articleFormSchema },
 });
 
-const ArticleContentStep = withForm({
+const StepOne = withForm({
   ...articleFormOptions,
-  render: function ArticleContentStep({ form }) {
+  props: { close: () => {} },
+  render: function StepOne({ form, close }) {
     return (
-      <Stack>
-        <form.AppField name="content.title">
-          {(field) => <field.FormInput label="Title" />}
-        </form.AppField>
-        <form.AppField name="content.body">
-          {(field) => <field.FormTextarea label="Body" minRows={7} />}
-        </form.AppField>
-      </Stack>
+      <form.FormGroup
+        name="content"
+        validators={{ onSubmit: articleContentSchema }}
+        onGroupSubmit={() => form.setFieldValue("currentStep", 2)}
+      >
+        {(group) => (
+          <Stack>
+            <StepHeading step={1} title="Write the Article" />
+            <form.AppField name="content.title">
+              {(field) => <field.FormInput label="Title" />}
+            </form.AppField>
+            <form.AppField name="content.body">
+              {(field) => <field.FormTextarea label="Body" minRows={7} />}
+            </form.AppField>
+            <Group justify="space-between">
+              <Button variant="subtle" onClick={close} type="button">
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                loading={group.state.meta.isSubmitting}
+                onClick={() => void group.handleSubmit()}
+              >
+                Continue
+              </Button>
+            </Group>
+          </Stack>
+        )}
+      </form.FormGroup>
     );
   },
 });
 
-const ArticlePublicationStep = withForm({
+const StepTwo = withForm({
   ...articleFormOptions,
-  render: function ArticlePublicationStep({ form }) {
+  render: function StepTwo({ form }) {
     return (
-      <form.AppField name="publication.status">
-        {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
-      </form.AppField>
+      <form.FormGroup
+        name="publication"
+        validators={{ onSubmit: articlePublicationSchema }}
+        onGroupSubmit={() => form.handleSubmit()}
+      >
+        {(group) => (
+          <Stack>
+            <StepHeading step={2} title="Choose publication status" />
+            <form.AppField name="publication.status">
+              {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
+            </form.AppField>
+            <Group justify="space-between">
+              <Button
+                variant="subtle"
+                onClick={() => form.setFieldValue("currentStep", 1)}
+                type="button"
+              >
+                Back
+              </Button>
+              <Button
+                type="button"
+                loading={group.state.meta.isSubmitting}
+                onClick={() => void group.handleSubmit()}
+              >
+                Create Article
+              </Button>
+            </Group>
+          </Stack>
+        )}
+      </form.FormGroup>
     );
   },
 });
@@ -72,63 +121,16 @@ const ArticleEditorForm = withForm({
         <Stack>
           {mutationError ? <Alert color="red">The Article could not be created.</Alert> : null}
           <form.Subscribe selector={(state) => state.values.currentStep}>
-            {(step) =>
-              step === 1 ? (
-                <form.FormGroup
-                  name="content"
-                  validators={{ onSubmit: articleContentSchema }}
-                  onGroupSubmit={() => form.setFieldValue("currentStep", 2)}
-                >
-                  {(group) => (
-                    <Stack>
-                      <StepHeading step={1} title="Write the Article" />
-                      <ArticleContentStep form={form} />
-                      <Group justify="space-between">
-                        <Button variant="subtle" onClick={close} type="button">
-                          Cancel
-                        </Button>
-                        <Button
-                          type="button"
-                          loading={group.state.meta.isSubmitting}
-                          onClick={() => void group.handleSubmit()}
-                        >
-                          Continue
-                        </Button>
-                      </Group>
-                    </Stack>
-                  )}
-                </form.FormGroup>
-              ) : (
-                <form.FormGroup
-                  name="publication"
-                  validators={{ onSubmit: articlePublicationSchema }}
-                  onGroupSubmit={() => form.handleSubmit()}
-                >
-                  {(group) => (
-                    <Stack>
-                      <StepHeading step={2} title="Choose publication status" />
-                      <ArticlePublicationStep form={form} />
-                      <Group justify="space-between">
-                        <Button
-                          variant="subtle"
-                          onClick={() => form.setFieldValue("currentStep", 1)}
-                          type="button"
-                        >
-                          Back
-                        </Button>
-                        <Button
-                          type="button"
-                          loading={group.state.meta.isSubmitting}
-                          onClick={() => void group.handleSubmit()}
-                        >
-                          Create Article
-                        </Button>
-                      </Group>
-                    </Stack>
-                  )}
-                </form.FormGroup>
-              )
-            }
+            {(step) => {
+              switch (step) {
+                case 1:
+                  return <StepOne form={form} close={close} />;
+                case 2:
+                  return <StepTwo form={form} />;
+              }
+
+              return null;
+            }}
           </form.Subscribe>
         </Stack>
       </form>
