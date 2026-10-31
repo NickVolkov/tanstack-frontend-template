@@ -5,9 +5,23 @@ import { describe, expect, it } from "vitest";
 import { useAppForm } from "./base-form";
 
 function FormFixture() {
-  const form = useAppForm({ defaultValues: { name: "Ada" } });
+  const form = useAppForm({
+    defaultValues: {
+      author: { name: "Ada" },
+      publication: { status: "draft" },
+    },
+  });
 
-  return <form.AppField name="name">{(field) => <field.FormInput label="Name" />}</form.AppField>;
+  return (
+    <>
+      <form.AppField name="author.name">
+        {(field) => <field.FormInput label="Name" />}
+      </form.AppField>
+      <form.AppField name="publication.status">
+        {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
+      </form.AppField>
+    </>
+  );
 }
 
 describe("application form", () => {
@@ -18,7 +32,9 @@ describe("application form", () => {
       </MantineProvider>,
     );
 
-    expect(html).toContain('name="name"');
+    expect(html).toContain('name="author.name"');
     expect(html).toContain('value="Ada"');
+    expect(html).toContain('name="publication.status"');
+    expect(html).toContain('value="draft"');
   });
 });

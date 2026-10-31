@@ -1,6 +1,6 @@
 export { clearPrivateServerState } from "./lib";
 export { useRefCallback } from "./hooks";
-export { FieldHOC, FormInput, FormTextarea, useAppForm, withForm } from "./form";
+export { FieldHOC, FormInput, FormSelect, FormTextarea, useAppForm, withForm } from "./form";
 export {
   createContextModal,
   MantineContextModal,

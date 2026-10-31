@@ -26,7 +26,7 @@ export const { fieldContext, formContext, useFieldContext, useFormContext } =
 
 // base-form.tsx
 export const { useAppForm, withForm } = createFormHook({
-  fieldComponents: { FormInput, FormTextarea },
+  fieldComponents: { FormInput, FormTextarea, FormSelect },
   formComponents: { Button },
   fieldContext,
   formContext,
@@ -159,7 +159,9 @@ import { z } from "zod";
 export const articleFormSchema = z.object({
   title: z.string().trim().min(3).max(120),
   body: z.string().trim().min(20),
-  status: z.enum(["draft", "published"]),
+  publication: z.object({
+    status: z.enum(["draft", "published"]),
+  }),
 });
 
 export type ArticleFormValues = z.infer<typeof articleFormSchema>;
@@ -291,13 +293,72 @@ Forms use React Context for state management:
 const { fieldContext, formContext } = createFormHookContexts();
 ```
 
+### Nested form sections
+
+Nested sections share one form instance. Model nested values in `defaultValues`
+and Zod, address them with dot paths, and use `withForm` to extract a reusable
+section. A nested section does not call `useAppForm` and does not create another
+HTML `<form>`:
+
+```tsx
+const articleFormOptions = formOptions({
+  defaultValues: {
+    title: "",
+    body: "",
+    publication: { status: "draft" as const },
+  },
+  validators: { onSubmit: articleFormSchema },
+});
+
+const ArticlePublicationFields = withForm({
+  ...articleFormOptions,
+  render: function ArticlePublicationFields({ form }) {
+    return (
+      <form.AppField name="publication.status">
+        {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
+      </form.AppField>
+    );
+  },
+});
+
+const ArticleEditorForm = withForm({
+  ...articleFormOptions,
+  render: ({ form }) => (
+    <form>
+      <form.AppField name="title">{(field) => <field.FormInput label="Title" />}</form.AppField>
+      <ArticlePublicationFields form={form} />
+    </form>
+  ),
+});
+```
+
+The form model may be shaped for the workflow rather than copied from a
+generated request DTO. Map it once at the mutation boundary:
+
+```ts
+function mapArticleFormToCreateDto(values: ArticleFormValues): CreateArticleDto {
+  return {
+    title: values.title,
+    body: values.body,
+    status: values.publication.status,
+  };
+}
+```
+
+This preserves nested UI ownership without leaking form structure into the API
+contract.
+
 ## Available Field Types
 
-The form system provides several built-in field types:
+The canonical form system registers:
 
-- `Input` - Standard text input
-- `Textarea` - Multi-line text input
-- `Select` - Dropdown selection
+- `FormInput` - standard text input
+- `FormTextarea` - multi-line text input with native Enter behavior
+- `FormSelect` - dropdown selection with value/error plumbing
+
+Add other adapters with `FieldHOC` when the project needs them. Common
+extensions include:
+
 - `Multiselect` - Multiple selection
 - `DateInput` - Date picker
 - `Checkbox` - Checkbox input
@@ -316,6 +377,8 @@ The form system provides several built-in field types:
 9. **Reuse one form context pair** across `createFormHook` and all registered fields
 10. **Keep domain rules out of `FieldHOC`**; it adapts UI events and accessibility, not business validation
 11. **Disable Enter-submit for multiline controls** so generic field plumbing does not override native editing behavior
+12. **Share one form instance across nested sections** and address nested values with typed dot paths
+13. **Map form values to transport DTOs once** when workflow shape and API shape differ
 
 Submission failures belong to the mutation state. Validation failures belong to
 TanStack Form field/form meta. Do not mirror either into an extra React state:

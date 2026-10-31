@@ -1,9 +1,14 @@
-import { Alert, Button, Group, Select, Stack } from "@mantine/core";
+import { Alert, Button, Group, Stack } from "@mantine/core";
 import { formOptions } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 
-import { articleFormSchema, articleMutations, type ArticleFormValues } from "@/entities/article";
+import {
+  articleFormSchema,
+  articleMutations,
+  mapArticleFormToCreateDto,
+  type ArticleFormValues,
+} from "@/entities/article";
 import { createContextModal, MantineContextModal, useAppForm, withForm } from "@/shared";
 
 const { useModal, withModal } = createContextModal({
@@ -14,12 +19,23 @@ const { useModal, withModal } = createContextModal({
 const initialValues: ArticleFormValues = {
   title: "",
   body: "",
-  status: "draft",
+  publication: { status: "draft" },
 };
 
 const articleFormOptions = formOptions({
   defaultValues: initialValues,
   validators: { onSubmit: articleFormSchema },
+});
+
+const ArticlePublicationFields = withForm({
+  ...articleFormOptions,
+  render: function ArticlePublicationFields({ form }) {
+    return (
+      <form.AppField name="publication.status">
+        {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
+      </form.AppField>
+    );
+  },
 });
 
 const ArticleEditorForm = withForm({
@@ -43,19 +59,7 @@ const ArticleEditorForm = withForm({
           <form.AppField name="body">
             {(field) => <field.FormTextarea label="Body" minRows={7} />}
           </form.AppField>
-          <form.AppField name="status">
-            {(field) => (
-              <Select
-                label="Status"
-                data={["draft", "published"]}
-                value={field.state.value}
-                onChange={(value) =>
-                  field.handleChange(value === "published" ? "published" : "draft")
-                }
-                error={field.state.meta.errors[0]?.message}
-              />
-            )}
-          </form.AppField>
+          <ArticlePublicationFields form={form} />
           <Group justify="flex-end">
             <Button variant="subtle" onClick={close} type="button">
               Cancel
@@ -82,7 +86,7 @@ function ArticleEditorModalRoot() {
   const form = useAppForm({
     ...articleFormOptions,
     onSubmit: async ({ value }) => {
-      await createArticle.mutateAsync(value);
+      await createArticle.mutateAsync(mapArticleFormToCreateDto(value));
       close();
     },
   });
