@@ -9,9 +9,10 @@ for genuinely isolated forms. Introduce the application form hook, `withForm`,
 field contexts, and `FieldHOC` patterns below when multiple forms share field
 behavior; do not build an abstraction for a single field.
 
-The canonical app now includes the Odes form architecture under
+The canonical app includes the Odes form architecture under
 `canonical-app/src/shared/form`. The Article editor uses `formOptions`,
-`useAppForm`, `withForm`, registered fields, and mutation-driven submission.
+`useAppForm`, `withForm`, registered fields, `FormGroup`, and
+mutation-driven submission in a two-step flow.
 
 ### One context pair is a hard invariant
 
@@ -157,11 +158,12 @@ cannot drift:
 import { z } from "zod";
 
 export const articleFormSchema = z.object({
-  title: z.string().trim().min(3).max(120),
-  body: z.string().trim().min(20),
-  publication: z.object({
-    status: z.enum(["draft", "published"]),
+  currentStep: z.union([z.literal(1), z.literal(2)]),
+  content: z.object({
+    title: z.string().trim().min(3).max(120),
+    body: z.string().trim().min(20),
   }),
+  publication: z.object({ status: z.enum(["draft", "published"]) }),
 });
 
 export type ArticleFormValues = z.infer<typeof articleFormSchema>;
@@ -293,26 +295,63 @@ Forms use React Context for state management:
 const { fieldContext, formContext } = createFormHookContexts();
 ```
 
-### Nested form sections
+### Form groups and step flows
 
-Nested sections share one form instance. Model nested values in `defaultValues`
-and Zod, address them with dot paths, and use `withForm` to extract a reusable
-section. A nested section does not call `useAppForm` and does not create another
-HTML `<form>`:
+Do not use “nested form” for every field with a dot path. Keep these three
+concepts distinct:
+
+- A **nested value** is an object in the root form state, addressed by paths such
+  as `content.title`.
+- A **step component** is UI extracted with `withForm`. It receives the existing
+  root form instance; it does not own validation or submission by itself.
+- A **form group** is a TanStack Form validation and submission boundary over
+  one nested value. `FormGroup` validates only that group and calls
+  `onGroupSubmit` only when the active step is valid.
+
+Use the Odes onboarding composition for a wizard or stepper: create exactly one
+root form, keep every step's values in that form, render step UI with `withForm`,
+and wrap the active step in a concretely typed `form.FormGroup`. Do not create a
+`useAppForm` instance per step and do not use root `handleSubmit` merely to move
+between steps.
 
 ```tsx
+const articleContentSchema = z.object({
+  title: z.string().trim().min(3).max(120),
+  body: z.string().trim().min(20),
+});
+
+const articlePublicationSchema = z.object({
+  status: z.enum(["draft", "published"]),
+});
+
 const articleFormOptions = formOptions({
   defaultValues: {
-    title: "",
-    body: "",
+    currentStep: 1 as 1 | 2,
+    content: { title: "", body: "" },
     publication: { status: "draft" as const },
   },
   validators: { onSubmit: articleFormSchema },
 });
 
-const ArticlePublicationFields = withForm({
+const ArticleContentStep = withForm({
   ...articleFormOptions,
-  render: function ArticlePublicationFields({ form }) {
+  render: function ArticleContentStep({ form }) {
+    return (
+      <>
+        <form.AppField name="content.title">
+          {(field) => <field.FormInput label="Title" />}
+        </form.AppField>
+        <form.AppField name="content.body">
+          {(field) => <field.FormTextarea label="Body" />}
+        </form.AppField>
+      </>
+    );
+  },
+});
+
+const ArticlePublicationStep = withForm({
+  ...articleFormOptions,
+  render: function ArticlePublicationStep({ form }) {
     return (
       <form.AppField name="publication.status">
         {(field) => <field.FormSelect label="Status" data={["draft", "published"]} />}
@@ -324,13 +363,61 @@ const ArticlePublicationFields = withForm({
 const ArticleEditorForm = withForm({
   ...articleFormOptions,
   render: ({ form }) => (
-    <form>
-      <form.AppField name="title">{(field) => <field.FormInput label="Title" />}</form.AppField>
-      <ArticlePublicationFields form={form} />
-    </form>
+    <form.Subscribe selector={(state) => state.values.currentStep}>
+      {(step) =>
+        step === 1 ? (
+          <form.FormGroup
+            name="content"
+            validators={{ onSubmit: articleContentSchema }}
+            onGroupSubmit={() => form.setFieldValue("currentStep", 2)}
+          >
+            {(group) => (
+              <>
+                <ArticleContentStep form={form} />
+                <button type="button" onClick={() => void group.handleSubmit()}>
+                  Continue
+                </button>
+              </>
+            )}
+          </form.FormGroup>
+        ) : (
+          <form.FormGroup
+            name="publication"
+            validators={{ onSubmit: articlePublicationSchema }}
+            onGroupSubmit={() => form.handleSubmit()}
+          >
+            {(group) => (
+              <>
+                <ArticlePublicationStep form={form} />
+                <button type="button" onClick={() => void group.handleSubmit()}>
+                  Create Article
+                </button>
+              </>
+            )}
+          </form.FormGroup>
+        )
+      }
+    </form.Subscribe>
   ),
 });
 ```
+
+The group schema receives the value at `name`, not the full form value. Its
+field-error paths are relative to that group (`title`, not `content.title`). A
+group's `state.meta.isSubmitting` belongs to that step's sync/async validator
+and `onGroupSubmit`; root form submission state belongs to the final command.
+This separation lets a step perform server-backed validation before advancing
+without pretending the entire workflow was submitted.
+
+When the active group name changes by step, prefer an explicit branch with a
+literal `name` for each `FormGroup`. Building a heterogeneous
+`{ name, validators }` union and spreading it into one component weakens generic
+inference and can make a validator for one group appear assignable to another.
+
+All values remain in the root form while steps mount and unmount. Read values
+needed by a later step through a narrow `form.Subscribe` selector or the form
+API; do not duplicate them in React state. Back navigation only changes the
+workflow field. Final submission still validates the complete root schema.
 
 The form model may be shaped for the workflow rather than copied from a
 generated request DTO. Map it once at the mutation boundary:
@@ -338,8 +425,8 @@ generated request DTO. Map it once at the mutation boundary:
 ```ts
 function mapArticleFormToCreateDto(values: ArticleFormValues): CreateArticleDto {
   return {
-    title: values.title,
-    body: values.body,
+    title: values.content.title,
+    body: values.content.body,
     status: values.publication.status,
   };
 }
@@ -377,8 +464,10 @@ extensions include:
 9. **Reuse one form context pair** across `createFormHook` and all registered fields
 10. **Keep domain rules out of `FieldHOC`**; it adapts UI events and accessibility, not business validation
 11. **Disable Enter-submit for multiline controls** so generic field plumbing does not override native editing behavior
-12. **Share one form instance across nested sections** and address nested values with typed dot paths
-13. **Map form values to transport DTOs once** when workflow shape and API shape differ
+12. **Share one root form across all steps** and address nested values with typed dot paths
+13. **Use `FormGroup` for step-local validation and submission** before advancing the workflow
+14. **Branch on literal group names** instead of combining incompatible group validators into a heterogeneous union
+15. **Map form values to transport DTOs once** when workflow shape and API shape differ
 
 Submission failures belong to the mutation state. Validation failures belong to
 TanStack Form field/form meta. Do not mirror either into an extra React state:
@@ -391,9 +480,10 @@ from the mutation object.
 ```
 Form Component (withForm)
 └── form.AppForm
-    ├── form.AppField
-    │   └── Field Component (FieldHOC)
-    │       └── UI Component (Input, Textarea, etc.)
-    └── Submit Button
-        └── form.SubmitButton
+    └── form.FormGroup (active step)
+        ├── Step Component (withForm, same root form)
+        │   └── form.AppField
+        │       └── Field Component (FieldHOC)
+        │           └── UI Component (Input, Textarea, etc.)
+        └── Step Button → group.handleSubmit()
 ```

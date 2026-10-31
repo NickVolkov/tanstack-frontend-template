@@ -1,18 +1,31 @@
 import { describe, expect, it } from "vitest";
 
-import { articleFormSchema, mapArticleFormToCreateDto } from "./article.schema";
+import {
+  articleContentSchema,
+  articleFormSchema,
+  articlePublicationSchema,
+  mapArticleFormToCreateDto,
+} from "./article.schema";
 
 describe("Article form schema", () => {
-  it("validates nested publication state and maps it to the API command", () => {
+  it("validates the step groups and maps workflow state to the API command", () => {
+    expect(articleContentSchema.safeParse({ title: "No", body: "Too short" }).success).toBe(false);
+    expect(articlePublicationSchema.parse({ status: "published" })).toEqual({
+      status: "published",
+    });
+
     const values = articleFormSchema.parse({
-      title: "Nested form values",
-      body: "The feature form can differ from the generated transport command.",
+      currentStep: 2,
+      content: {
+        title: "Grouped form values",
+        body: "Each step validates its own group before the workflow advances.",
+      },
       publication: { status: "published" },
     });
 
     expect(mapArticleFormToCreateDto(values)).toEqual({
-      title: "Nested form values",
-      body: "The feature form can differ from the generated transport command.",
+      title: "Grouped form values",
+      body: "Each step validates its own group before the workflow advances.",
       status: "published",
     });
   });

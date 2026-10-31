@@ -26,6 +26,8 @@
 - Calling `createFormHookContexts()` separately for the form factory and registered fields.
 - Putting domain validation inside a generic `FieldHOC` UI adapter.
 - Creating a second `useAppForm` instance for a nested section of one submission.
+- Advancing a stepper with root `handleSubmit` instead of validating the active `FormGroup`.
+- Passing a dynamic union of unrelated group names and validators into one `FormGroup`; branch on literal group names so validator types remain aligned.
 - Sending a nested workflow form object directly when the generated API command has a different shape.
 - Resetting a form before mutation success.
 - Treating an infinite query as a flat array in cache helpers.

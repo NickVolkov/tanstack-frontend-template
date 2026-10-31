@@ -7,8 +7,13 @@ export {
   seedArticleDetail,
 } from "./model/article.queries";
 export type { ArticleListParams, ArticleServiceClient } from "./model/article.queries";
-export { articleFormSchema, mapArticleFormToCreateDto } from "./model/article.schema";
-export type { ArticleFormValues } from "./model/article.schema";
+export {
+  articleContentSchema,
+  articleFormSchema,
+  articlePublicationSchema,
+  mapArticleFormToCreateDto,
+} from "./model/article.schema";
+export type { ArticleEditorStep, ArticleFormValues } from "./model/article.schema";
 export { ArticleCard } from "./ui/article-card";
 export type {
   ArticleDto,
