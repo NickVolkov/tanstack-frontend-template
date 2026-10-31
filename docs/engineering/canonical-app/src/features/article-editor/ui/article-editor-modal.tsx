@@ -1,33 +1,27 @@
-import { Alert, Button, Group, Modal, Select, Stack, Textarea, TextInput } from "@mantine/core";
+import { Alert, Button, Group, Select, Stack, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 
 import { articleFormSchema, articleMutations, type ArticleFormValues } from "@/entities/article";
-import { createModalController } from "@/shared";
+import { createContextModal, MantineContextModal } from "@/shared";
 
-const articleEditorModal = createModalController<undefined>("ArticleEditor");
-const initialValues: ArticleFormValues = {
-  title: "",
-  body: "",
-  status: "draft",
-};
+const { useModal, withModal } = createContextModal({
+  name: "ArticleEditor",
+  ModalComponent: MantineContextModal,
+});
+
+const initialValues: ArticleFormValues = { title: "", body: "", status: "draft" };
 
 function ArticleEditorForm({ close }: { close: () => void }) {
   const queryClient = useQueryClient();
   const { ArticlesService } = useRouter().options.context.api;
   const createArticle = useMutation(articleMutations.create(ArticlesService, queryClient));
-  const [validationError, setValidationError] = useState<string>();
   const form = useForm({
     defaultValues: initialValues,
+    validators: { onSubmit: articleFormSchema },
     onSubmit: async ({ value }) => {
-      const parsed = articleFormSchema.safeParse(value);
-      if (!parsed.success) {
-        setValidationError(parsed.error.issues[0]?.message ?? "Check the form");
-        return;
-      }
-      await createArticle.mutateAsync(parsed.data);
+      await createArticle.mutateAsync(value);
       close();
     },
   });
@@ -40,7 +34,6 @@ function ArticleEditorForm({ close }: { close: () => void }) {
       }}
     >
       <Stack>
-        {validationError ? <Alert color="red">{validationError}</Alert> : null}
         {createArticle.error ? <Alert color="red">The Article could not be created.</Alert> : null}
 
         <form.Field name="title">
@@ -50,6 +43,7 @@ function ArticleEditorForm({ close }: { close: () => void }) {
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(event) => field.handleChange(event.currentTarget.value)}
+              error={field.state.meta.errors[0]?.message}
             />
           )}
         </form.Field>
@@ -61,6 +55,7 @@ function ArticleEditorForm({ close }: { close: () => void }) {
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={(event) => field.handleChange(event.currentTarget.value)}
+              error={field.state.meta.errors[0]?.message}
             />
           )}
         </form.Field>
@@ -73,6 +68,7 @@ function ArticleEditorForm({ close }: { close: () => void }) {
               onChange={(value) =>
                 field.handleChange(value === "published" ? "published" : "draft")
               }
+              error={field.state.meta.errors[0]?.message}
             />
           )}
         </form.Field>
@@ -80,23 +76,26 @@ function ArticleEditorForm({ close }: { close: () => void }) {
           <Button variant="subtle" onClick={close} type="button">
             Cancel
           </Button>
-          <Button type="submit" loading={createArticle.isPending}>
-            Create Article
-          </Button>
+          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            {([canSubmit, isSubmitting]) => (
+              <Button type="submit" disabled={!canSubmit} loading={isSubmitting}>
+                Create Article
+              </Button>
+            )}
+          </form.Subscribe>
         </Group>
       </Stack>
     </form>
   );
 }
 
-export function ArticleEditorModal() {
-  const modal = articleEditorModal.useModal();
-  return (
-    <Modal opened={modal.isOpen} onClose={modal.close} title="New Article" size="lg">
-      <ArticleEditorForm close={modal.close} />
-    </Modal>
-  );
+function ArticleEditorModalRoot() {
+  const { close } = useModal();
+  return <ArticleEditorForm close={close} />;
 }
 
-export const ArticleEditorModalProvider = articleEditorModal.Provider;
-export const useArticleEditorModal = articleEditorModal.useModal;
+export { useModal as useArticleEditorModal };
+export const withArticleEditorModal = withModal(ArticleEditorModalRoot, {
+  title: "New Article",
+  size: "lg",
+});

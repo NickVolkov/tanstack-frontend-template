@@ -12,6 +12,8 @@
 ## Components and features
 
 - Passing full DTOs through modal parameters instead of identifiers.
+- Clearing modal parameters when closing begins instead of after the exit transition.
+- Hand-mounting feature providers and modal components at every caller instead of exporting a composed HOC.
 - Building UI state from contradictory combinations of query flags.
 - Calling transport services from presentational components.
 - Importing another slice's internal file instead of its public API.
@@ -20,6 +22,7 @@
 ## Forms and lists
 
 - Using server DTO validation as the only client input validation.
+- Mirroring TanStack Form validation or mutation errors into an extra React state.
 - Resetting a form before mutation success.
 - Treating an infinite query as a flat array in cache helpers.
 - Replacing rendered pages with a global spinner during pagination.

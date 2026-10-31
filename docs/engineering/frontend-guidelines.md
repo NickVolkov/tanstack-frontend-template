@@ -1,42 +1,186 @@
-# Frontend guidelines
+# Frontend engineering guidelines
 
-## Architecture
+This is the full project adaptation of the reusable `frontend-engineer` guide. It
+keeps the original architecture and implementation patterns, while making the
+template decisions explicit: TanStack Start and Router, TanStack Query and Form,
+Zod, generated Hey API clients, Mantine, MSW, Storybook, Oxfmt, and Oxlint.
 
-Use the dependency direction:
+The runnable [canonical Article application](./canonical-app/README.md) is the
+executable reference. When an abbreviated snippet in these guides differs from
+that application, follow the canonical application and update the guide.
 
-```text
-app → pages → widgets → features → entities → shared
+## Core Concepts
+
+### 1. Feature-Driven Architecture
+
+The application follows a feature-driven architecture with the following structure:
+
+```
+src/
+├── routes/           # TanStack file routes and route-level composition
+├── entities/         # Business entities (models, queries, mappers)
+├── features/         # Self-contained business features
+├── shared/           # Shared utilities, components, and services
+├── widgets/          # Composite UI components
+└── pages/            # Page components that compose features
 ```
 
-Higher layers compose lower layers. A layer must not import upward. Slices on the same layer do not reach into each other's internals. Every slice exposes a deliberately small public API through `index.ts`; implementation files stay private.
+### 2. Entity Layer Pattern
 
-Prefer deep modules: keep query orchestration, transport mapping and error interpretation behind a narrow hook or factory. A component should consume a domain-oriented state, not rebuild cache behavior from flags and raw DTOs.
+Entities represent business objects with three core components. Each entity is contained in its own directory with files named using the entity name as a prefix:
 
-## Responsibilities
+#### Model
 
-- `app`: providers, router construction, global styles and composition.
-- `pages`: route-level composition and page layout.
-- `widgets`: reusable page sections that coordinate multiple features.
-- `features`: user intentions such as creating or opening an Article.
-- `entities`: domain data, query factories, mutations, mappers and entity UI.
-- `shared`: provider-agnostic infrastructure and reusable primitives with no domain vocabulary.
+Defines TypeScript types for the entity:
 
-Keep transport DTOs at the entity API boundary. Map them when the UI needs stable domain semantics. Do not put network calls directly in page components.
+```ts
+// File: article.model.ts
+export type Article = {
+  id: string;
+  name: string;
+  status: ArticleStatus;
+};
 
-## State placement
+export enum ArticleStatus {
+  Draft = "draft",
+  Published = "published",
+}
+```
 
-- TanStack Query owns server state.
-- A form owns draft input until submission.
-- Component state owns short-lived visual state.
-- The URL owns navigable state such as filters, sorting, pagination and selected identifiers when deep linking matters.
-- Context is for a bounded coordination seam, not a default global store.
+#### Queries
 
-## SSR
+Handles server-state fetching using TanStack Query. Query factories receive an
+API service rather than importing a browser singleton, so the same options work
+during SSR and in the browser:
 
-Create one QueryClient per router/request. A browser API client may be a singleton; a server API client must be constructed per request. Forward only explicitly required headers. Never mutate a module-level server client with request credentials.
+```ts
+// File: article.queries.ts
+export const articleQueries = {
+  list: (service: ArticlesService) => queryOptions({/* ... */}),
+  detail: (service: ArticlesService, id: string) => queryOptions({/* ... */}),
+};
+```
 
-Start independent work together and await it at the latest responsible boundary. Avoid request waterfalls in route loaders.
+#### Mapper
 
-## Public interfaces
+Transforms API data to match the model:
 
-Export use cases and stable types, not folder structure. If a consumer needs three internal imports to perform one user action, deepen the producing module.
+```ts
+// File: article.mapper.ts
+export function mapArticle(apiArticle: ApiArticle): Article {
+  return {
+    id: apiArticle.articleId,
+    name: apiArticle.title,
+    status: apiArticle.state,
+  };
+}
+```
+
+### 3. Feature Layer Pattern
+
+Features implement specific business capabilities and follow these principles:
+
+- Self-contained with clear boundaries
+- Use entities for data operations
+- Export reusable UI components
+- Handle their own state management
+
+Structure:
+
+```
+features/
+└── feature-name/
+    ├── ui/           # UI components specific to this feature
+    ├── api/          # Feature-specific API hooks (optional)
+    └── lib/          # Feature-specific utilities (optional)
+```
+
+### 4. API integration pattern
+
+API integration follows these conventions:
+
+- Generated API clients from Swagger/OpenAPI specs
+- A request-scoped server client and browser client behind the same router context seam
+- Type-safe request/response contracts
+- Consistent error handling
+
+### 5. Routing pattern
+
+Application routing uses:
+
+- TanStack Router file routes and typed navigation
+- Route loaders that consume query options from entities
+- Route-based code splitting
+
+### 6. State Management Pattern
+
+State management is implemented with:
+
+- TanStack Query for server state
+- Custom contexts for client state
+- Key factory pattern for query invalidation
+- Selectors for data transformation
+
+### 7. UI Component Patterns
+
+UI components follow these principles:
+
+- Composition over inheritance
+- Separation of presentation and logic
+- Reusable table components with column definitions
+- Consistent skeleton/loading states
+- Error and empty state handling
+
+## Development Conventions
+
+### Naming Conventions
+
+- Files: kebab-case (`article-player.tsx`) with entity name prefix for entity files (`media.queries.ts`, `user.model.ts`)
+- Components: PascalCase (`ArticlePlayer`)
+- Functions: camelCase (`getArticleDuration`)
+- Constants: UPPER_SNAKE_CASE (`MAX_VIDEO_SIZE`)
+
+### File Structure
+
+- One main export per file
+- Related files grouped in folders
+- Index files for easy imports
+- Barrel exports for public APIs
+
+### Dependency direction and imports
+
+Use the `@/*` alias for imports across `src/`; keep short relative imports
+inside one local slice. Dependencies point downward:
+
+```text
+routes/pages -> widgets -> features -> entities -> shared
+```
+
+Lower layers must not import higher layers. A slice exposes its public API from
+its root `index.ts`; consumers do not deep-import another slice's internals.
+
+## Testing Approach
+
+- Unit tests for pure functions and components
+- Integration tests for hooks and complex logic
+- Mock API responses for data layer testing
+- Coverage reporting with thresholds
+
+## Build and Deployment
+
+- TypeScript for type checking
+- Oxfmt for deterministic formatting
+- Type-aware Oxlint and TypeScript for static checks
+- Generated-code drift checks in CI
+
+## Detailed Implementation Guides
+
+For more detailed information on specific implementation approaches, see:
+
+- [Queries and API](./queries-and-api.md) - data fetching, generated clients, and state management
+- [Server-state cache](./server-state-cache.md) - list/detail projections, placeholder data, seeding, and session boundaries
+- [Modals](./modals.md) - the canonical Odes modal factory and composition pattern
+- [Forms](./forms.md) - form system and validation
+- [Lists](./lists.md) - list components, pagination, filtering, and states
+- [Testing](./testing.md) - executable architecture and testing boundaries
+- [Anti-patterns](./anti-patterns.md) - prohibited shortcuts and their replacements

@@ -1,10 +1,16 @@
-import { Alert, Badge, Button, Group, Modal, Skeleton, Stack, Text, Title } from "@mantine/core";
+import { Alert, Badge, Button, Group, Skeleton, Stack, Text, Title } from "@mantine/core";
 
-import { createModalController } from "@/shared";
+import { createContextModal, MantineContextModal } from "@/shared";
 
 import { useArticleDetails } from "../model/use-article-details";
 
-const articleDetailsModal = createModalController<{ articleId: string }>("ArticleDetails");
+type ArticleDetailsModalParams = { articleId: string | null };
+
+const { useModal, withModal } = createContextModal({
+  name: "ArticleDetails",
+  ModalComponent: MantineContextModal,
+  getInitialParams: (): ArticleDetailsModalParams => ({ articleId: null }),
+});
 
 function ArticleDetailsContent({ articleId }: { articleId: string }) {
   const query = useArticleDetails(articleId);
@@ -57,14 +63,15 @@ function ArticleDetailsContent({ articleId }: { articleId: string }) {
   );
 }
 
-export function ArticleDetailsModal() {
-  const modal = articleDetailsModal.useModal();
-  return (
-    <Modal opened={modal.isOpen} onClose={modal.close} title="Article details" size="lg">
-      {modal.params ? <ArticleDetailsContent articleId={modal.params.articleId} /> : null}
-    </Modal>
-  );
+function ArticleDetailsModalRoot() {
+  const { params } = useModal();
+  if (!params.articleId) return null;
+  return <ArticleDetailsContent articleId={params.articleId} />;
 }
 
-export const ArticleDetailsModalProvider = articleDetailsModal.Provider;
-export const useArticleDetailsModal = articleDetailsModal.useModal;
+export { useModal as useArticleDetailsModal };
+export const withArticleDetailsModal = withModal(ArticleDetailsModalRoot, {
+  title: "Article details",
+  size: "lg",
+});
+export type { ArticleDetailsModalParams };

@@ -3,16 +3,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 
 import { ArticleCard, articleQueries } from "@/entities/article";
-import {
-  ArticleDetailsModal,
-  ArticleDetailsModalProvider,
-  useArticleDetailsModal,
-} from "@/features/article-details";
-import {
-  ArticleEditorModal,
-  ArticleEditorModalProvider,
-  useArticleEditorModal,
-} from "@/features/article-editor";
+import { useArticleDetailsModal, withArticleDetailsModal } from "@/features/article-details";
+import { useArticleEditorModal, withArticleEditorModal } from "@/features/article-editor";
 
 function ArticlesScreen() {
   const { ArticlesService } = useRouter().options.context.api;
@@ -32,7 +24,7 @@ function ArticlesScreen() {
                 The Article ledger
               </Title>
             </div>
-            <Button onClick={() => editorModal.open(undefined)}>New Article</Button>
+            <Button onClick={editorModal.open}>New Article</Button>
           </Group>
 
           {articles.isPending ? (
@@ -79,18 +71,8 @@ function ArticlesScreen() {
           ) : null}
         </Stack>
       </Container>
-      <ArticleDetailsModal />
-      <ArticleEditorModal />
     </main>
   );
 }
 
-export function ArticlesPage() {
-  return (
-    <ArticleDetailsModalProvider>
-      <ArticleEditorModalProvider>
-        <ArticlesScreen />
-      </ArticleEditorModalProvider>
-    </ArticleDetailsModalProvider>
-  );
-}
+export const ArticlesPage = withArticleDetailsModal(withArticleEditorModal(ArticlesScreen));

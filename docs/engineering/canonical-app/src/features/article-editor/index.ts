@@ -1,5 +1,1 @@
-export {
-  ArticleEditorModal,
-  ArticleEditorModalProvider,
-  useArticleEditorModal,
-} from "./ui/article-editor-modal";
+export { useArticleEditorModal, withArticleEditorModal } from "./ui/article-editor-modal";

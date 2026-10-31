@@ -1,1 +1,2 @@
-export { createModalController } from "./create-modal-controller";
+export { default as createContextModal, type ModalBaseProps } from "./modal-context";
+export { MantineContextModal, type MantineContextModalProps } from "./mantine-modal";
