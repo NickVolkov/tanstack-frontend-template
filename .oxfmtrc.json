@@ -2,12 +2,20 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "ignorePatterns": [
     "docs/engineering/**",
+    ".planning/**",
+    "plan.md",
+    "apm.lock.yaml",
+    "**/generated/**",
+    "src/client-new/**/*.gen.ts",
     "src/routeTree.gen.ts",
     "node_modules/**",
     ".output/**",
     ".vinxi/**",
     "storybook-static/**",
-    "apm_modules/**"
+    "apm_modules/**",
+    ".agents/**",
+    ".claude/**",
+    ".codex/**"
   ],
   "sortPackageJson": true
 }

@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "excludeFromUpdates": ["src/**", "README.md", ".github/workflows/**"],
   "symlinks": {
     "CLAUDE.md": "AGENTS.md"
   },
@@ -10,5 +11,5 @@
     "pnpm routes:generate",
     "pnpm canonical:generate"
   ],
-  "afterUpdate": ["pnpm install", "pnpm canonical:install", "pnpm check"]
+  "afterUpdate": ["apm install", "pnpm install", "pnpm canonical:install", "pnpm check"]
 }

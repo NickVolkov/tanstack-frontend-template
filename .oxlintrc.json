@@ -24,7 +24,11 @@
     ".output/**",
     ".vinxi/**",
     "storybook-static/**",
-    "apm_modules/**"
+    "apm_modules/**",
+    ".agents/**",
+    ".claude/**",
+    ".codex/**",
+    "src/client-new/**/*.gen.ts"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
@@ -60,5 +64,18 @@
       { "rootPath": "/src/", "alias": { "value": "@", "withSlash": true } }
     ],
     "fsd/ordered-imports": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": [".storybook/**/*"],
+      "rules": {
+        "fsd/forbidden-imports": "off",
+        "fsd/no-cross-slice-dependency": "off",
+        "fsd/no-global-store-imports": "off",
+        "fsd/no-public-api-sidestep": "off",
+        "fsd/no-relative-imports": "off",
+        "fsd/no-ui-in-business-logic": "off"
+      }
+    }
+  ]
 }

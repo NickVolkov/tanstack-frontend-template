@@ -9,3 +9,6 @@ storybook-static/
 .env
 .env.local
 apm_modules/
+.agents/
+.claude/skills/
+.codex/skills/
