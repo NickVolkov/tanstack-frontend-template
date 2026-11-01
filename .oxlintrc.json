@@ -18,6 +18,7 @@
   },
   "ignorePatterns": [
     "docs/engineering/**",
+    "**/generated/**",
     "src/routeTree.gen.ts",
     "node_modules/**",
     ".output/**",
@@ -47,7 +48,7 @@
       {
         "rootPath": "/src/",
         "alias": { "value": "@", "withSlash": true },
-        "publicApi": { "allowSegmentImports": false, "enforceShared": true }
+        "publicApi": { "allowSegmentImports": true, "enforceShared": true }
       }
     ],
     "fsd/no-relative-imports": [

@@ -1,5 +1,5 @@
-import { createClient, createConfig } from "@/api/generated/client";
-import { ApiService, type ArticlesService as ArticlesServiceClass } from "@/api/generated/sdk.gen";
+import { createClient, createConfig } from "./generated/client";
+import { ApiService, type ArticlesService as ArticlesServiceClass } from "./generated/sdk.gen";
 
 export type ServerApi = { ArticlesService: ArticlesServiceClass };
 

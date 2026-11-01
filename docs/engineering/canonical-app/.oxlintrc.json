@@ -9,7 +9,7 @@
   "jsPlugins": [{ "name": "fsd", "specifier": "eslint-plugin-fsd-lint" }],
   "options": { "typeAware": true, "maxWarnings": 0 },
   "ignorePatterns": [
-    "src/api/generated/**",
+    "src/shared/api/generated/**",
     "src/mocks/openapi.spec.json",
     "src/routeTree.gen.ts",
     "public/mockServiceWorker.js",
@@ -40,7 +40,7 @@
       {
         "rootPath": "/src/",
         "alias": { "value": "@", "withSlash": true },
-        "publicApi": { "allowSegmentImports": false, "enforceShared": true }
+        "publicApi": { "allowSegmentImports": true, "enforceShared": true }
       }
     ],
     "fsd/no-relative-imports": [

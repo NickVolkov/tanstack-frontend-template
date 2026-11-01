@@ -150,14 +150,15 @@ canonical `FormTextarea` sets `submitOnEnter: false`.
 
 ### Schema validation with Zod
 
-Keep the Zod schema at the entity boundary when it describes an entity command.
-Infer the form value type from the schema so runtime and compile-time contracts
-cannot drift:
+Keep a reusable entity invariant in the entity slice. Keep workflow state —
+including steps, intermediate values, and a form-to-command mapper — in the
+feature's `model` segment. Infer the form value type from the schema so runtime
+and compile-time contracts cannot drift:
 
 ```ts
 import { z } from "zod";
 
-export const articleFormSchema = z.object({
+export const articleEditorFormSchema = z.object({
   currentStep: z.union([z.literal(1), z.literal(2)]),
   content: z.object({
     title: z.string().trim().min(3).max(120),
@@ -166,7 +167,7 @@ export const articleFormSchema = z.object({
   publication: z.object({ status: z.enum(["draft", "published"]) }),
 });
 
-export type ArticleFormValues = z.infer<typeof articleFormSchema>;
+export type ArticleEditorFormValues = z.infer<typeof articleEditorFormSchema>;
 ```
 
 ### Field-Level Validation
@@ -278,7 +279,7 @@ Custom fields can be created using the `FieldHOC`:
 ```ts
 // Custom field example
 import { CustomInputComponent } from "./custom-input-component";
-import { FieldHOC } from "@/shared/ui/base-form/field-hoc";
+import { FieldHOC } from "@/shared/form";
 
 export const CustomInputField = FieldHOC(CustomInputComponent, {
   extractValue: (value) => value,
@@ -315,31 +316,31 @@ and wrap the active step in a concretely typed `form.FormGroup`. Do not create a
 between steps.
 
 ```tsx
-const articleContentSchema = z.object({
+const articleEditorContentSchema = z.object({
   title: z.string().trim().min(3).max(120),
   body: z.string().trim().min(20),
 });
 
-const articlePublicationSchema = z.object({
+const articleEditorPublicationSchema = z.object({
   status: z.enum(["draft", "published"]),
 });
 
-const articleFormOptions = formOptions({
+const articleEditorFormOptions = formOptions({
   defaultValues: {
     currentStep: 1 as 1 | 2,
     content: { title: "", body: "" },
     publication: { status: "draft" as const },
   },
-  validators: { onSubmit: articleFormSchema },
+  validators: { onSubmit: articleEditorFormSchema },
 });
 
 const StepOne = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   render: function StepOne({ form }) {
     return (
       <form.FormGroup
         name="content"
-        validators={{ onSubmit: articleContentSchema }}
+        validators={{ onSubmit: articleEditorContentSchema }}
         onGroupSubmit={() => form.setFieldValue("currentStep", 2)}
       >
         {(group) => (
@@ -361,12 +362,12 @@ const StepOne = withForm({
 });
 
 const StepTwo = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   render: function StepTwo({ form }) {
     return (
       <form.FormGroup
         name="publication"
-        validators={{ onSubmit: articlePublicationSchema }}
+        validators={{ onSubmit: articleEditorPublicationSchema }}
         onGroupSubmit={() => form.handleSubmit()}
       >
         {(group) => (
@@ -385,7 +386,7 @@ const StepTwo = withForm({
 });
 
 const ArticleEditorForm = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   render: ({ form }) => (
     <form.Subscribe selector={(state) => state.values.currentStep}>
       {(step) => {
@@ -424,7 +425,7 @@ The form model may be shaped for the workflow rather than copied from a
 generated request DTO. Map it once at the mutation boundary:
 
 ```ts
-function mapArticleFormToCreateDto(values: ArticleFormValues): CreateArticleDto {
+function mapArticleEditorFormToCreateDto(values: ArticleEditorFormValues): CreateArticleDto {
   return {
     title: values.content.title,
     body: values.content.body,

@@ -4,7 +4,7 @@ import type {
   ArticleListResponseDto,
   CreateArticleDto,
   UpdateArticleDto,
-} from "@/api/generated/types.gen";
+} from "@/shared/api";
 
 const seed: ArticleDto[] = [
   {

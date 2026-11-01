@@ -10,7 +10,7 @@ These tracked instructions are authoritative for this repository. Existing code 
 
 ## Hard boundaries
 
-- Follow the dependency direction `app → pages → widgets → features → entities → shared`. Import another slice through its public `index.ts` only.
+- Follow the dependency direction `app → pages → widgets → features → entities → shared`. Import another slice through its root `index.ts`; import Shared through a segment `index.ts` such as `@/shared/api` or `@/shared/form`.
 - Keep server state in TanStack Query. Keep ephemeral interaction state local. Do not duplicate query data in a global client store.
 - A query key identifies both the source and the shape of data. List summaries and detail DTOs are distinct projections and must not share cache entries.
 - Never seed a detail cache entry with a partial list DTO. Use `placeholderData` for previews and `setQueryData` only for complete, authoritative responses.

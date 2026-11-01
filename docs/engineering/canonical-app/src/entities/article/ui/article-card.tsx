@@ -1,6 +1,6 @@
 import { Badge, Button, Group, Paper, Stack, Text, Title } from "@mantine/core";
 
-import type { ArticleListItemDto } from "@/api/generated/types.gen";
+import type { ArticleListItemDto } from "@/shared/api";
 
 export function ArticleCard({
   article,

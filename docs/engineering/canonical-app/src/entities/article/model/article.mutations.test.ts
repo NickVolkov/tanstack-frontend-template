@@ -1,11 +1,7 @@
 import { MutationObserver, QueryClient, type InfiniteData } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 
-import type {
-  ArticleDto,
-  ArticleListResponseDto,
-  CreateArticleDto,
-} from "@/api/generated/types.gen";
+import type { ArticleDto, ArticleListResponseDto, CreateArticleDto } from "@/shared/api";
 
 import { articleMutations } from "./article.mutations";
 import { articleKeys, type ArticleServiceClient } from "./article.queries";

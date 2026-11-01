@@ -1,6 +1,6 @@
 import { mutationOptions, type QueryClient } from "@tanstack/react-query";
 
-import type { CreateArticleDto, UpdateArticleDto } from "@/api/generated/types.gen";
+import type { CreateArticleDto, UpdateArticleDto } from "@/shared/api";
 
 import { articleKeys, seedArticleDetail, type ArticleServiceClient } from "./article.queries";
 

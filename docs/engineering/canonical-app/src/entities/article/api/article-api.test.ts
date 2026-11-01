@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createServerApi } from "@/api";
+import { createServerApi } from "@/shared/api";
 
 describe("generated Article client with MSW", () => {
   it("keeps list summaries distinct from complete details", async () => {

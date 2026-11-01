@@ -1,8 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 
-import type { ArticleDto, ArticleListItemDto } from "@/api/generated/types.gen";
-import { articleQueries, findArticlePreview, isArticleDetail } from "@/entities/article";
+import {
+  articleQueries,
+  findArticlePreview,
+  isArticleDetail,
+  type ArticleDto,
+  type ArticleListItemDto,
+} from "@/entities/article";
 
 export type ArticleDetailsState =
   | { status: "loading"; preview?: ArticleListItemDto }

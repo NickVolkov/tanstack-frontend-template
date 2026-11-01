@@ -1,11 +1,7 @@
 import { QueryClient, QueryObserver, type InfiniteData } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 
-import type {
-  ArticleDto,
-  ArticleListItemDto,
-  ArticleListResponseDto,
-} from "@/api/generated/types.gen";
+import type { ArticleDto, ArticleListItemDto, ArticleListResponseDto } from "@/shared/api";
 
 import {
   articleKeys,

@@ -17,12 +17,13 @@ The application follows a feature-driven architecture with the following structu
 
 ```
 src/
-├── routes/           # TanStack file routes and route-level composition
+├── app/              # App-wide providers, router implementation, and global styles
+├── routes/           # Thin TanStack file-route adapters required by the framework
+├── pages/            # Page slices that compose widgets and features
+├── widgets/          # Reusable, self-contained page blocks
+├── features/         # User-facing business actions and workflows
 ├── entities/         # Business entities (models, queries, mappers)
-├── features/         # Self-contained business features
-├── shared/           # Shared utilities, components, and services
-├── widgets/          # Composite UI components
-└── pages/            # Page components that compose features
+└── shared/           # Business-agnostic API, UI, and library segments
 ```
 
 ### 2. Entity Layer Pattern
@@ -91,6 +92,7 @@ Structure:
 features/
 └── feature-name/
     ├── ui/           # UI components specific to this feature
+    ├── model/        # Workflow state, schemas, orchestration, and business logic
     ├── api/          # Feature-specific API hooks (optional)
     └── lib/          # Feature-specific utilities (optional)
 ```
@@ -109,6 +111,7 @@ API integration follows these conventions:
 Application routing uses:
 
 - TanStack Router file routes and typed navigation
+- Thin `src/routes` files that import page slices through their public APIs
 - Route loaders that consume query options from entities
 - Route-based code splitting
 
@@ -153,11 +156,17 @@ Use the `@/*` alias for imports across `src/`; keep short relative imports
 inside one local slice. Dependencies point downward:
 
 ```text
-routes/pages -> widgets -> features -> entities -> shared
+app/routes → pages → widgets → features → entities → shared
 ```
 
-Lower layers must not import higher layers. A slice exposes its public API from
-its root `index.ts`; consumers do not deep-import another slice's internals.
+Lower layers must not import higher layers, and slices on the same layer remain
+independent. A slice exposes one public API from its root `index.ts`. Shared and
+App have segments rather than slices, so consumers import their segment public
+APIs, for example `@/shared/api`, `@/shared/form`, and `@/app/router`.
+
+Framework-required root files (`client.tsx`, `server.ts`, `router.tsx`, generated
+route trees, and file routes) are entrypoint adapters. Keep them thin: app-wide
+implementation belongs in `app`, while route UI belongs in a `pages` slice.
 
 ## Testing Approach
 

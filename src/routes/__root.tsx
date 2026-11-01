@@ -1,7 +1,7 @@
 import "@fontsource-variable/newsreader/index.css";
 import "@fontsource-variable/source-sans-3/index.css";
 import "@mantine/core/styles.css";
-import "@/styles/app.css";
+import "@/app/styles/app.css";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";

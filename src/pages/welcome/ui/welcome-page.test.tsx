@@ -2,7 +2,7 @@ import { MantineProvider } from "@mantine/core";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { WelcomePage } from "./index";
+import { WelcomePage } from "./welcome-page";
 
 describe("WelcomePage", () => {
   it("points readers to the executable engineering baseline", () => {

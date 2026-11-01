@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { WelcomePage } from "./index";
+import { WelcomePage } from "./welcome-page";
 
 const meta = {
   title: "Pages/Welcome",

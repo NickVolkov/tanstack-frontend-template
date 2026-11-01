@@ -5,18 +5,18 @@ import {
   type QueryClient,
 } from "@tanstack/react-query";
 
-import type { ArticlesService as ArticlesServiceType } from "@/api/generated/sdk.gen";
 import type {
   ArticleDto,
   ArticleListItemDto,
   ArticleListResponseDto,
+  GeneratedArticlesService,
   GetApiArticlesData,
-} from "@/api/generated/types.gen";
+} from "@/shared/api";
 
 export type ArticleListParams = Omit<NonNullable<GetApiArticlesData["query"]>, "page">;
 
 export type ArticleServiceClient = Pick<
-  ArticlesServiceType,
+  GeneratedArticlesService,
   "listArticles" | "getArticle" | "createArticle" | "updateArticle" | "deleteArticle"
 >;
 

@@ -1,6 +1,6 @@
 import { Alert, Badge, Button, Group, Skeleton, Stack, Text, Title } from "@mantine/core";
 
-import { createContextModal, MantineContextModal } from "@/shared";
+import { createContextModal, MantineContextModal } from "@/shared/modal";
 
 import { useArticleDetails } from "../model/use-article-details";
 

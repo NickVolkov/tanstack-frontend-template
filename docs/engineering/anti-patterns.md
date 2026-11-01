@@ -11,6 +11,8 @@
 
 ## Components and features
 
+- Defining feature workflow state, step schemas, or form-to-command mapping in an entity slice.
+- Keeping mutation orchestration and form configuration inside a feature's `ui` segment instead of its `model` segment.
 - Passing full DTOs through modal parameters instead of identifiers.
 - Clearing modal parameters when closing begins instead of after the exit transition.
 - Hand-mounting feature providers and modal components at every caller instead of exporting a composed HOC.

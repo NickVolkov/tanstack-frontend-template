@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ArticleDto, ArticleListItemDto } from "@/api/generated/types.gen";
+import type { ArticleDto, ArticleListItemDto } from "@/entities/article";
 
 import { getArticleDetailsState } from "./use-article-details";
 

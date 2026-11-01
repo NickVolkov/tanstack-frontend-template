@@ -193,7 +193,8 @@ execution. Reusing the same key for retries prevents duplicate writes.
 
 ## Generated client and SSR boundary
 
-Generated files under `src/api/generated` are read-only outputs. Wrap them with:
+Generated files under `src/shared/api/generated` are read-only outputs. The
+`shared/api` segment owns their public interface and wraps them with:
 
 - a browser client configured for browser credentials and base URL;
 - a request-scoped server client that forwards only explicitly allowed request

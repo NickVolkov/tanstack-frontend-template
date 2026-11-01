@@ -2,7 +2,7 @@ import { fromOpenApi } from "@msw/source/open-api";
 import { delay, http, HttpResponse } from "msw";
 import type { OpenAPI } from "openapi-types";
 
-import type { CreateArticleDto, UpdateArticleDto } from "@/api/generated/types.gen";
+import type { CreateArticleDto, UpdateArticleDto } from "@/shared/api";
 
 import openApiSpec from "@/mocks/openapi.spec.json";
 import {

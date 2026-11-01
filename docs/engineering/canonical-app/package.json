@@ -18,7 +18,7 @@
     "test": "vitest run",
     "storybook": "storybook dev -p 6007",
     "build:storybook": "storybook build",
-    "check:generated": "pnpm generate && git diff --exit-code -- src/api/generated src/mocks/openapi.spec.json src/routeTree.gen.ts",
+    "check:generated": "pnpm generate && git diff --exit-code -- src/shared/api/generated src/mocks/openapi.spec.json src/routeTree.gen.ts",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm check:generated"
   },
   "dependencies": {

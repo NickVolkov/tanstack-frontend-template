@@ -1,42 +1,28 @@
 import { Alert, Button, Group, Stack, Text, Title } from "@mantine/core";
-import { formOptions } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+
+import { withForm } from "@/shared/form";
+import { createContextModal, MantineContextModal } from "@/shared/modal";
 
 import {
-  articleContentSchema,
-  articleFormSchema,
-  articleMutations,
-  articlePublicationSchema,
-  mapArticleFormToCreateDto,
-  type ArticleFormValues,
-} from "@/entities/article";
-import { createContextModal, MantineContextModal, useAppForm, withForm } from "@/shared";
+  articleEditorContentSchema,
+  articleEditorFormOptions,
+  articleEditorPublicationSchema,
+} from "../model/article-editor.form";
+import { useArticleEditorForm } from "../model/use-article-editor-form";
 
 const { useModal, withModal } = createContextModal({
   name: "ArticleEditor",
   ModalComponent: MantineContextModal,
 });
 
-const initialValues: ArticleFormValues = {
-  currentStep: 1,
-  content: { title: "", body: "" },
-  publication: { status: "draft" },
-};
-
-const articleFormOptions = formOptions({
-  defaultValues: initialValues,
-  validators: { onSubmit: articleFormSchema },
-});
-
 const StepOne = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   props: { close: () => {} },
   render: function StepOne({ form, close }) {
     return (
       <form.FormGroup
         name="content"
-        validators={{ onSubmit: articleContentSchema }}
+        validators={{ onSubmit: articleEditorContentSchema }}
         onGroupSubmit={() => form.setFieldValue("currentStep", 2)}
       >
         {(group) => (
@@ -68,12 +54,12 @@ const StepOne = withForm({
 });
 
 const StepTwo = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   render: function StepTwo({ form }) {
     return (
       <form.FormGroup
         name="publication"
-        validators={{ onSubmit: articlePublicationSchema }}
+        validators={{ onSubmit: articleEditorPublicationSchema }}
         onGroupSubmit={() => form.handleSubmit()}
       >
         {(group) => (
@@ -106,7 +92,7 @@ const StepTwo = withForm({
 });
 
 const ArticleEditorForm = withForm({
-  ...articleFormOptions,
+  ...articleEditorFormOptions,
   props: {
     close: () => {},
     mutationError: null as unknown,
@@ -151,18 +137,9 @@ function StepHeading({ step, title }: { step: 1 | 2; title: string }) {
 
 function ArticleEditorModalRoot() {
   const { close } = useModal();
-  const queryClient = useQueryClient();
-  const { ArticlesService } = useRouter().options.context.api;
-  const createArticle = useMutation(articleMutations.create(ArticlesService, queryClient));
-  const form = useAppForm({
-    ...articleFormOptions,
-    onSubmit: async ({ value }) => {
-      await createArticle.mutateAsync(mapArticleFormToCreateDto(value));
-      close();
-    },
-  });
+  const { form, mutationError } = useArticleEditorForm({ onCreated: close });
 
-  return <ArticleEditorForm form={form} close={close} mutationError={createArticle.error} />;
+  return <ArticleEditorForm form={form} close={close} mutationError={mutationError} />;
 }
 
 export { useModal as useArticleEditorModal };
