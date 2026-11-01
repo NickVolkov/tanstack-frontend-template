@@ -5,11 +5,11 @@
     "CLAUDE.md": "AGENTS.md"
   },
   "afterCreate": [
-    "apm install",
+    "apm install --frozen",
     "pnpm install",
     "pnpm canonical:install",
     "pnpm routes:generate",
     "pnpm canonical:generate"
   ],
-  "afterUpdate": ["apm install", "pnpm install", "pnpm canonical:install", "pnpm check"]
+  "afterUpdate": ["apm install --frozen", "pnpm install", "pnpm canonical:install", "pnpm check"]
 }
