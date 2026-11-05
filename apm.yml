@@ -8,7 +8,7 @@ targets:
   - codex
 dependencies:
   apm:
-    - mattpocock/skills
+    - yo-finance/yo-ai#v0.2.0
   mcp: []
 includes: auto
 scripts: {}

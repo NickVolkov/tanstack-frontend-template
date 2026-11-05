@@ -12,3 +12,5 @@ apm_modules/
 .agents/
 .claude/skills/
 .codex/skills/
+.codex/config.toml
+.mcp.json

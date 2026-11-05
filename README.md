@@ -4,6 +4,8 @@ A reusable baseline for SSR-capable React applications with TanStack Start, Rout
 
 ## Start a project
 
+Prerequisites: Node.js 22+, pnpm, Git, and [mise](https://mise.jdx.dev/) must be available on `PATH`. The template uses mise to install and run its pinned APM version.
+
 After this repository is published:
 
 ```sh
