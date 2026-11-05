@@ -8,7 +8,7 @@ targets:
   - codex
 dependencies:
   apm:
-    - yo-finance/yo-ai#v0.2.0
+    - yo-finance/yo-ai#v0.2.1
   mcp: []
 includes: auto
 scripts: {}
