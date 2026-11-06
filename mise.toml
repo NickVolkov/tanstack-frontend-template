@@ -2,3 +2,11 @@ min_version = "2026.10.0"
 
 [tools]
 apm = "0.35.0"
+
+[tasks.ai-install]
+description = "Install pinned AI dependencies"
+run = "apm install --frozen --target opencode"
+
+[tasks.ai-audit]
+description = "Audit installed AI dependencies"
+run = "apm audit --ci"

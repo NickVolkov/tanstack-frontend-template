@@ -3,12 +3,10 @@ version: 1.0.0
 description: APM project for tanstack-frontend-template
 author: Nick Volkov
 targets:
-  - agent-skills
-  - claude
-  - codex
+  - opencode
 dependencies:
   apm:
-    - yo-finance/yo-ai#v0.2.1
+    - yo-finance/yo-ai#v0.2.4
   mcp: []
 includes: auto
 scripts: {}
