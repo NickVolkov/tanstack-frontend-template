@@ -28,11 +28,5 @@ dependencies:
           "402x874",
         ]
       enabled: true
-    - name: shadcn
-      registry: false
-      transport: stdio
-      command: npx
-      args: ["shadcn@latest", "mcp"]
-      enabled: true
 includes: auto
 scripts: {}

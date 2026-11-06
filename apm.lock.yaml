@@ -185,15 +185,6 @@ deployments:
   - .
   active_owner: .
   content_hash: null
-- kind: uri
-  target: mcp
-  value: shadcn
-  runtime: opencode
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: null
 - kind: project-relative
   target: opencode
   value: .agents/skills/code-review
@@ -757,7 +748,6 @@ mcp_servers:
 - figma-desktop
 - plane
 - playwright
-- shadcn
 mcp_configs:
   context7:
     name: context7
@@ -794,22 +784,12 @@ mcp_configs:
     registry: false
     command: npx
     enabled: true
-  shadcn:
-    name: shadcn
-    transport: stdio
-    args:
-    - shadcn@latest
-    - mcp
-    registry: false
-    command: npx
-    enabled: true
 mcp_target_servers:
   opencode:
   - context7
   - figma-desktop
   - plane
   - playwright
-  - shadcn
 mcp_config_provenance:
   context7: yo-ai
   plane: yo-ai
