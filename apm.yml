@@ -6,7 +6,33 @@ targets:
   - opencode
 dependencies:
   apm:
-    - yo-finance/yo-ai#v0.2.4
-  mcp: []
+    - yo-finance/yo-ai#v0.2.5
+  mcp:
+    - name: figma-desktop
+      registry: false
+      transport: streamable-http
+      url: http://127.0.0.1:3845/mcp
+      enabled: true
+    - name: playwright
+      registry: false
+      transport: stdio
+      command: npx
+      args:
+        [
+          "@playwright/mcp@latest",
+          "--browser",
+          "chromium",
+          "--caps",
+          "vision",
+          "--viewport-size",
+          "402x874",
+        ]
+      enabled: true
+    - name: shadcn
+      registry: false
+      transport: stdio
+      command: npx
+      args: ["shadcn@latest", "mcp"]
+      enabled: true
 includes: auto
 scripts: {}

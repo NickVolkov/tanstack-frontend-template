@@ -4,9 +4,9 @@ dependencies:
 - repo_url: yo-finance/yo-ai
   name: yo-ai
   host: github.com
-  resolved_commit: 93354873d12efc54392e3c5507e1960a5683564c
-  resolved_ref: v0.2.4
-  version: 0.2.4
+  resolved_commit: 5fccc28e8ef0f3e738288a2591b57536eb78aeb7
+  resolved_ref: v0.2.5
+  version: 0.2.5
   package_type: skill_bundle
   deployed_files:
   - .agents/skills/document-workflow
@@ -16,7 +16,7 @@ dependencies:
   deployed_file_hashes:
     .agents/skills/document-workflow/SKILL.md: sha256:7ac46b8039589a8aea052eae06ca523b266f5d4b50adcd45bd8ec8b6cb38b3b0
     .agents/skills/source-grounding/SKILL.md: sha256:0712ed3dda61b7ca9eaa6d9a2f7c041d3fc49e917f825e575a101cf476444a73
-  content_hash: sha256:fb4ddd6455a578a8f07323b7e6a3f7799577b7a4e2de41afae91b1eca97072bf
+  content_hash: sha256:ea305bc97bde6e06a7e9d2cef450702a011512488cac08e380e4c7b5d692a916
   declared_license: MIT
 - repo_url: mattpocock/skills
   name: mattpocock-skills
@@ -151,7 +151,43 @@ dependencies:
 deployments:
 - kind: uri
   target: mcp
+  value: context7
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: figma-desktop
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
   value: plane
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: playwright
+  runtime: opencode
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: uri
+  target: mcp
+  value: shadcn
   runtime: opencode
   scope: project
   owners:
@@ -717,16 +753,63 @@ deployments:
   active_owner: mattpocock/skills
   content_hash: sha256:eacb24b2a618cfb81dacb0416f4fdd75ddf3a8060f8ddb99aae1b1e301907e4b
 mcp_servers:
+- context7
+- figma-desktop
 - plane
+- playwright
+- shadcn
 mcp_configs:
+  context7:
+    name: context7
+    transport: stdio
+    args:
+    - -y
+    - '@upstash/context7-mcp@latest'
+    registry: false
+    command: npx
+    enabled: true
+  figma-desktop:
+    name: figma-desktop
+    transport: streamable-http
+    registry: false
+    url: http://127.0.0.1:3845/mcp
+    enabled: true
   plane:
     name: plane
     transport: streamable-http
     registry: false
     url: https://mcp.plane.so/http/mcp
     enabled: true
+  playwright:
+    name: playwright
+    transport: stdio
+    args:
+    - '@playwright/mcp@latest'
+    - --browser
+    - chromium
+    - --caps
+    - vision
+    - --viewport-size
+    - 402x874
+    registry: false
+    command: npx
+    enabled: true
+  shadcn:
+    name: shadcn
+    transport: stdio
+    args:
+    - shadcn@latest
+    - mcp
+    registry: false
+    command: npx
+    enabled: true
 mcp_target_servers:
   opencode:
+  - context7
+  - figma-desktop
   - plane
+  - playwright
+  - shadcn
 mcp_config_provenance:
+  context7: yo-ai
   plane: yo-ai
