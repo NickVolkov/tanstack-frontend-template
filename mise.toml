@@ -1,8 +1,6 @@
-min_version = "2026.10.9"
-
-[tools]
-opencode = "2.2.5"
-apm = "0.35.0"
+include = [
+  "git::https://github.com/yo-finance/yo-ai.git//config/mise-ai-tools.toml?ref=main",
+]
 
 [tasks.ai-install]
 description = "Install pinned AI dependencies"
