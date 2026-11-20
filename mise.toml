@@ -1,6 +1,4 @@
-include = [
-  "git::https://github.com/yo-finance/yo-ai.git//config/mise-ai-tools.toml?ref=main",
-]
+include = ["git::https://github.com/yo-finance/yo-ai.git//config/mise-ai-tools.toml?ref=main"]
 
 [tasks.ai-install]
 description = "Install pinned AI dependencies"
