@@ -6,7 +6,7 @@ targets:
   - opencode
 dependencies:
   apm:
-    - yo-finance/yo-ai#v0.2.5
+    - yo-finance/yo-ai#v0.2.6
   mcp:
     - name: figma-desktop
       registry: false

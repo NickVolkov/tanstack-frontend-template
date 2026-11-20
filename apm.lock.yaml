@@ -4,9 +4,9 @@ dependencies:
 - repo_url: yo-finance/yo-ai
   name: yo-ai
   host: github.com
-  resolved_commit: 5fccc28e8ef0f3e738288a2591b57536eb78aeb7
-  resolved_ref: v0.2.5
-  version: 0.2.5
+  resolved_commit: 88e42a965e335b9c4860cc6e89953cf4aae4366f
+  resolved_ref: v0.2.6
+  version: 0.2.6
   package_type: skill_bundle
   deployed_files:
   - .agents/skills/document-workflow
@@ -16,7 +16,7 @@ dependencies:
   deployed_file_hashes:
     .agents/skills/document-workflow/SKILL.md: sha256:7ac46b8039589a8aea052eae06ca523b266f5d4b50adcd45bd8ec8b6cb38b3b0
     .agents/skills/source-grounding/SKILL.md: sha256:0712ed3dda61b7ca9eaa6d9a2f7c041d3fc49e917f825e575a101cf476444a73
-  content_hash: sha256:ea305bc97bde6e06a7e9d2cef450702a011512488cac08e380e4c7b5d692a916
+  content_hash: sha256:12a5536c980b852e0b68f4d16972ee67af4801928050e58553b4436b70b51699
   declared_license: MIT
 - repo_url: mattpocock/skills
   name: mattpocock-skills
